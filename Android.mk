@@ -14,10 +14,13 @@
 # limitations under the License.
 #
 
+ifeq ($(TARGET_DEVICE),bacon)
+
 LOCAL_PATH := $(call my-dir)
 
 ifneq ($(filter oppo oneplus,$(BOARD_VENDOR)),)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
 
+endif
 endif
