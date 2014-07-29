@@ -5,6 +5,7 @@ import android.app.KeyguardManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,7 +24,7 @@ import android.view.KeyEvent;
 
 import com.android.internal.os.DeviceKeyHandler;
 import com.android.internal.util.ArrayUtils;
-import com.android.internal.util.cm.NavigationRingHelpers;
+//import com.android.internal.util.cm.NavigationRingHelpers;
 import com.android.internal.util.cm.TorchConstants;
 
 public class KeyHandler implements DeviceKeyHandler {
@@ -95,7 +96,7 @@ public class KeyHandler implements DeviceKeyHandler {
                 dispatchMediaKeyWithWakeLockToAudioService(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
                 break;
             case GESTURE_V_SCANCODE:
-                if (NavigationRingHelpers.isTorchAvailable(mContext)) {
+                if (isTorchAvailable(mContext)) {
                     Intent torchIntent = new Intent(TorchConstants.ACTION_TOGGLE_STATE);
                     torchIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
                     mContext.sendBroadcast(torchIntent);
@@ -131,6 +132,16 @@ public class KeyHandler implements DeviceKeyHandler {
             }
         }
         return isKeySupported;
+    }
+
+    public static boolean isTorchAvailable(Context context) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            return pm.getPackageInfo(TorchConstants.APP_PACKAGE_NAME, 0) != null;
+        } catch (PackageManager.NameNotFoundException e) {
+            // ignored, just catched so we can return false below
+        }
+        return false;
     }
 
     private Message getMessageForKeyEvent(KeyEvent keyEvent) {
